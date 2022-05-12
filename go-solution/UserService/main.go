@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"log"
+	"net"
+	"net/http"
+	"net/rpc"
 	"os"
 
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/controllers"
@@ -30,6 +34,28 @@ func main() {
 		repository.NewUserRepository(database.Collection("user"), ctx),
 	)
 	controller := controllers.NewUserController(userService)
+
+
+	api := services.RPC{UserService:  userService}
+	err = rpc.Register(&api)
+	if err != nil {
+		log.Fatal("error registering API", err)
+	}
+
+	rpc.HandleHTTP()
+
+	listener, err := net.Listen("tcp", ":4040")
+
+	if err != nil {
+		log.Fatal("Listener error", err)
+	}
+	log.Printf("serving rpc on port %d", 4040)
+	go http.Serve(listener, nil)
+
+	if err != nil {
+		log.Fatal("error serving: ", err)
+	}
+
 
 	s := server.New()
 	s.AddHandlers(controller)
