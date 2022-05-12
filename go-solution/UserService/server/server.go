@@ -18,7 +18,10 @@ func New() *Server {
 
 func (server *Server) AddHandlers(uc *controllers.UserController) {
 	router := server.Router
-	router.HandleFunc("/aaa", uc.Create())
+	router.HandleFunc("/register", uc.Register())
+	router.HandleFunc("/all-users", uc.GetAll())
+	router.HandleFunc("/users/", uc.FindByUsername())
+	router.HandleFunc("/auth", uc.Authenticate())
 }
 
 func (server *Server) Start() {

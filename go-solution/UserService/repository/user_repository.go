@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -17,10 +17,23 @@ func NewUserRepository(collection *mongo.Collection, ctx context.Context) *UserR
 	return &UserRepository{collection, ctx}
 }
 
-func (userRepository *UserRepository) Create(user *models.User) {
-	insertResult, err := userRepository.collection.InsertOne(userRepository.ctx, user)
-	if err != nil {
-			panic(err)
+func (userRepository *UserRepository) Create(user *models.User) interface{} {
+	insertResult, _ := userRepository.collection.InsertOne(userRepository.ctx, user)
+	return insertResult.InsertedID
+}
+
+func (userRepository *UserRepository) GetAll() *[]models.User {
+	cursor, _ := userRepository.collection.Find(userRepository.ctx, bson.M{})
+	var users []models.User
+	_ = cursor.All(userRepository.ctx, &users)
+	return &users
+}
+
+func (userRepository *UserRepository) FindByUsername(username string) *models.User {
+	var user models.User
+	err := userRepository.collection.FindOne(userRepository.ctx, bson.M{"username":username}).Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		return nil
 	}
-	fmt.Println(insertResult.InsertedID)
+	return &user
 }
