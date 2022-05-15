@@ -1,14 +1,12 @@
 package models
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Publication struct {
-	ID        primitive.ObjectID
+	ID        primitive.ObjectID  `bson:"_id,omitempty"`
+	PaperID   primitive.ObjectID
 	Author    string
 	Title     string
-	TimeStamp time.Time
 }
