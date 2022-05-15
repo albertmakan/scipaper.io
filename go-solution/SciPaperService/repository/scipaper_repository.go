@@ -23,15 +23,15 @@ func (sciPaperRepository *SciPaperRepository) Create(paper *models.Paper) error 
 	return err
 }
 
-func (sciPaperRepository *SciPaperRepository) GetAllByAuthor(author string) *[]models.Paper {
-	cursor, _ := sciPaperRepository.collection.Find(sciPaperRepository.ctx, bson.M{"author":author})
+func (sciPaperRepository *SciPaperRepository) GetAllByAuthorID(authorID string) *[]models.Paper {
+	cursor, _ := sciPaperRepository.collection.Find(sciPaperRepository.ctx, bson.M{"authorID":authorID})
 	var papers []models.Paper
 	_ = cursor.All(sciPaperRepository.ctx, &papers)
 	return &papers
 }
 
 func (sciPaperRepository *SciPaperRepository) Update(paper *models.Paper) error {
-	_, err := sciPaperRepository.collection.UpdateByID(sciPaperRepository.ctx, paper.ID, paper)
+	_, err := sciPaperRepository.collection.UpdateByID(sciPaperRepository.ctx, paper.ID, bson.M{"$set":paper})
 	return err
 }
 

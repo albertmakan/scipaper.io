@@ -28,15 +28,17 @@ func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
 		}
-		var newPaper models.Paper
-		helpers.ReadJSONBody(r, &newPaper)
+		var paper models.Paper
+		helpers.ReadJSONBody(r, &paper)
+		paper.AuthorID, paper.Author = spc.getName(r)
 		var err error
 		switch r.Method {
 			case http.MethodPost:
-				err = spc.sciPaperService.Create(&newPaper)
+				err = spc.sciPaperService.Create(&paper)
 			case http.MethodPut:
-				err = spc.sciPaperService.Update(&newPaper)
+				err = spc.sciPaperService.Update(&paper)
 			default:
 				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 				return
@@ -53,8 +55,10 @@ func (spc *SciPaperController) GetAllByAuthor() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
 		}
-		helpers.JSONResponse(w, http.StatusOK, spc.sciPaperService.GetAllByAuthor(spc.getName(r)))
+		un, _ := spc.getName(r)
+		helpers.JSONResponse(w, http.StatusOK, spc.sciPaperService.GetAllByAuthorID(un))
 	}
 }
 
@@ -62,15 +66,17 @@ func (spc *SciPaperController) Publish() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
 		}
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		var toPublish struct {paperID string}
+		var toPublish struct {PaperID string}
 		helpers.ReadJSONBody(r, &toPublish)
-		id, _ := primitive.ObjectIDFromHex(toPublish.paperID)
-		err := spc.sciPaperService.Publish(id)
+		id, _ := primitive.ObjectIDFromHex(toPublish.PaperID)
+		authorID, _ := spc.getName(r)
+		err := spc.sciPaperService.Publish(id, authorID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -90,15 +96,16 @@ func (spc *SciPaperController) isLoggedIn(r *http.Request) bool {
 	return isValid
 }
 
-func (spc *SciPaperController) getName(r *http.Request) string {
+func (spc *SciPaperController) getName(r *http.Request) (username, name string) {
 	tokenString := r.Header.Get("Authorization")
 	if len(tokenString) == 0 {
-		return ""
+		return "", ""
 	}
 	tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
-	name := ""
+	name = ""
 	spc.rpcClient.Call("RPC.GetName", tokenString, &name)
-	return name
+	f := strings.Fields(name)
+	return f[0], strings.Join(f[1:], " ")
 }
 
 func (spc *SciPaperController) Hello() http.HandlerFunc {

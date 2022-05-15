@@ -32,11 +32,16 @@ func (sciPaperService *SciPaperService) Create(paper *models.Paper) error {
 	return sciPaperService.sciPaperRepository.Create(paper)
 }
 
-func (sciPaperService *SciPaperService) GetAllByAuthor(author string) *[]models.Paper {
-	return sciPaperService.sciPaperRepository.GetAllByAuthor(author)
+func (sciPaperService *SciPaperService) GetAllByAuthorID(authorID string) *[]models.Paper {
+	return sciPaperService.sciPaperRepository.GetAllByAuthorID(authorID)
 }
 
 func (sciPaperService *SciPaperService) Update(paper *models.Paper) error {
+	existing := sciPaperService.FindByID(paper.ID)
+	if existing == nil { return fmt.Errorf("paper not found") }
+	if existing.AuthorID != paper.AuthorID {
+		return fmt.Errorf("author cannot update someone elses paper")
+	}
 	return sciPaperService.sciPaperRepository.Update(paper)
 }
 
@@ -44,9 +49,12 @@ func (sciPaperService *SciPaperService) FindByID(id primitive.ObjectID) *models.
 	return sciPaperService.sciPaperRepository.FindByID(id)
 }
 
-func (sciPaperService *SciPaperService) Publish(paperID primitive.ObjectID) error {
+func (sciPaperService *SciPaperService) Publish(paperID primitive.ObjectID, authorID string) error {
 	paper := sciPaperService.FindByID(paperID)
 	if paper == nil { return fmt.Errorf("paper not found") }
+	if paper.AuthorID != authorID {
+		return fmt.Errorf("author cannot publish someone elses paper")
+	}
 	info := struct {PaperID primitive.ObjectID; Author string; Title string
 		} {paper.ID, paper.Author, paper.Title}
 	body, _ := json.Marshal(info)

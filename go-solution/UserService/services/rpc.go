@@ -22,6 +22,6 @@ func (rpc *RPC) GetName(token string, reply *string) error {
 	if err != nil { return err }
 	username := fmt.Sprintf("%v", claims.(jwt.MapClaims)["name"])
 	user := rpc.UserService.FindByUsername(username)
-	*reply = user.FirstName+" "+user.LastName+" "+username
+	*reply = username+" "+user.FirstName+" "+user.LastName
 	return err
 }
