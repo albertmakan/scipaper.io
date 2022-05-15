@@ -17,9 +17,9 @@ func NewUserRepository(collection *mongo.Collection, ctx context.Context) *UserR
 	return &UserRepository{collection, ctx}
 }
 
-func (userRepository *UserRepository) Create(user *models.User) interface{} {
-	insertResult, _ := userRepository.collection.InsertOne(userRepository.ctx, user)
-	return insertResult.InsertedID
+func (userRepository *UserRepository) Create(user *models.User) error {
+	_, err := userRepository.collection.InsertOne(userRepository.ctx, user)
+	return err
 }
 
 func (userRepository *UserRepository) GetAll() *[]models.User {

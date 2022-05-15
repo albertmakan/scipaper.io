@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/albertmakan/scipaper.io/go-solution/UserService/dto"
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/helpers"
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/models"
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/services"
@@ -31,13 +30,13 @@ func (uc *UserController) Register() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		helpers.JSONResponse(w, 201, nil)
+		helpers.JSONResponse(w, http.StatusCreated, nil)
 	}
 }
 
 func (uc *UserController) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		helpers.JSONResponse(w, 200, uc.userService.GetAll())
+		helpers.JSONResponse(w, http.StatusOK, uc.userService.GetAll())
 	}
 }
 
@@ -49,7 +48,7 @@ func (uc *UserController) FindByUsername() http.HandlerFunc {
 			http.Error(w, "user not found", http.StatusNotFound)
 			return
 		}
-		helpers.JSONResponse(w, 200, user)
+		helpers.JSONResponse(w, http.StatusOK, user)
 	}
 }
 
@@ -59,7 +58,7 @@ func (uc *UserController) Authenticate() http.HandlerFunc {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		var login dto.Login
+		var login struct {Username, Password string}
 		helpers.ReadJSONBody(r, &login)
 
 		auth, err := uc.userService.Authenticate(login.Username, login.Password)
@@ -67,6 +66,12 @@ func (uc *UserController) Authenticate() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		helpers.JSONResponse(w, 200, auth)
+		helpers.JSONResponse(w, http.StatusOK, auth)
+	}
+}
+
+func (uc *UserController) Hello() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		helpers.JSONResponse(w, http.StatusOK, "Hello from UserService")
 	}
 }
