@@ -1,22 +1,32 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/rpc"
+	"context"
+	"os"
+
+	"github.com/albertmakan/scipaper.io/go-solution/SciPaperService/repository"
+	"github.com/albertmakan/scipaper.io/go-solution/SciPaperService/server"
+	"github.com/albertmakan/scipaper.io/go-solution/SciPaperService/services"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-	var reply string
+	err := godotenv.Load("go.env")
+  if err != nil {
+    panic("Error loading .env file")
+  }
 
-	client, err := rpc.DialHTTP("tcp", "localhost:4040")
-
-	if err != nil {
-		log.Fatal("Connection error: ", err)
-	}
-
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzOTIwNjksImlhdCI6MTY1MjM4ODQ2OSwibmFtZSI6Im1ha2FuYWxiZXJ0MiJ9.Cl905LCPqgBk7YmMRL_2vfHwcIdIkkAbTaBQCfvYSHs"
-	client.Call("RPC.GetName", token, &reply)
-
-	fmt.Println(reply)
+	ctx := context.Background()
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_CONNECTION")))
+	if err != nil {panic(err)}
+	defer client.Disconnect(ctx)
+	database := client.Database("scipaper-io")
+	sciPaperService := services.NewSciPaperService(
+		repository.NewSciPaperRepository(database.Collection("paper"), ctx),
+	)
+	sciPaperService.InitializeSender()
+	defer sciPaperService.DeinitializeSender()
+	server.New(sciPaperService).Start()
 }
