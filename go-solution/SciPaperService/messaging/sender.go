@@ -1,7 +1,8 @@
-package clients
+package messaging
 
 import (
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 )
@@ -13,7 +14,7 @@ type AMQPSender struct {
 }
 
 func (sender *AMQPSender) Initialize(queueName string) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(os.Getenv("AMPQ_CONNECTION"))
 	if err != nil {
 		log.Panicf("Failed to connect to RabbitMQ: %s", err)
 	}
