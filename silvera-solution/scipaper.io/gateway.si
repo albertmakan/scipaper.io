@@ -1,0 +1,21 @@
+import "setup.si"
+import "user.si"
+import "scipaper.si"
+import "library.si"
+
+
+api-gateway EntryGateway {
+    service_registry=ServiceRegistry
+
+    deployment {
+        version="0.0.1"
+        port=9095
+        url="http://localhost"
+    }
+
+    gateway-for{
+        User as /users
+        SciPaper as /papers
+        Library as /library
+    }
+}

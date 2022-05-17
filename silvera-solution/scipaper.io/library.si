@@ -1,0 +1,25 @@
+import "setup.si"
+
+service Library {
+    service_registry=ServiceRegistry
+
+    api {
+
+        @create
+        @read
+        typedef Publication [
+            @id str id
+            @required str paperId
+            @required str author
+            @required str title
+        ]
+
+        @rest(method=GET)
+        list<Publication> search()
+
+        internal {
+            @consumer(PublishMsgGroup.PaperPublished <- Broker.PUBLISH_PAPER)
+            void publishListener()
+        }
+    }
+}

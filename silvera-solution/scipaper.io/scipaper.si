@@ -1,0 +1,34 @@
+import "setup.si"
+import "user.si"
+
+service SciPaper {
+    service_registry=ServiceRegistry
+
+    api {
+
+        @crud
+        typedef Paper [
+            @id str id
+            @required str title
+            @required str author
+            @required str authorId
+            @required list<Section> sections
+        ]
+        typedef Section [
+          @required str name
+          @required str content
+        ]
+
+        @rest(method=GET, mapping="/my-papers")
+        list<Paper> getAllByAuthor(str authorId)
+
+        @rest(method=POST)
+        @producer(PublishMsgGroup.PaperPublished -> Broker.PUBLISH_PAPER)
+        void publish()
+    }
+}
+
+dependency SciPaper -> User {
+    isLoggedIn[fallback_static]
+    getName[fail_silent]
+}

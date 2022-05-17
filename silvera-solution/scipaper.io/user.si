@@ -1,0 +1,28 @@
+import "setup.si"
+
+service User {
+    service_registry=ServiceRegistry
+
+    api {
+
+        @create
+        @read
+        typedef User [
+            @id str id
+            @required str username
+            @required str firstName
+            @required str lastName
+            @required str password
+            str email
+        ]
+
+        @rest(method=POST, mapping="/auth")
+        str authenticate(Login login)
+
+        @rest(method=GET)
+        bool isLoggedIn(str token)
+
+        @rest(method=GET)
+        str getName(str token)
+    }
+}
