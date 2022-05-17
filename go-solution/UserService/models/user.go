@@ -11,3 +11,4 @@ type User struct {
 	LastName  string
 	Email     string
 }
+

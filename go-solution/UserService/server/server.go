@@ -29,8 +29,6 @@ func New(userService *services.UserService) *Server {
 func (server *Server) addHandlers() {
 	router := server.router
 	router.HandleFunc("/register", server.userController.Register())
-	// router.HandleFunc("/all-users", uc.GetAll())
-	// router.HandleFunc("/users/", uc.FindByUsername())
 	router.HandleFunc("/auth", server.userController.Authenticate())
 	router.HandleFunc("/hello", server.userController.Hello())
 }

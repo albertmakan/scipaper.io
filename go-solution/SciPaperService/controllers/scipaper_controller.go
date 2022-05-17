@@ -26,6 +26,7 @@ func NewSciPaperController(sciPaperService *services.SciPaperService) *SciPaperC
 
 func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -39,6 +40,9 @@ func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 				err = spc.sciPaperService.Create(&paper)
 			case http.MethodPut:
 				err = spc.sciPaperService.Update(&paper)
+			case http.MethodOptions:
+				w.WriteHeader(http.StatusOK)
+				return
 			default:
 				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 				return
@@ -53,6 +57,8 @@ func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 
 func (spc *SciPaperController) GetAllByAuthor() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -64,6 +70,8 @@ func (spc *SciPaperController) GetAllByAuthor() http.HandlerFunc {
 
 func (spc *SciPaperController) Publish() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -82,6 +90,13 @@ func (spc *SciPaperController) Publish() http.HandlerFunc {
 			return
 		}
 		helpers.JSONResponse(w, http.StatusOK, nil)
+	}
+}
+
+func (spc *SciPaperController) Hello() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		helpers.JSONResponse(w, http.StatusOK, "Hello from SciPaperService")
 	}
 }
 
@@ -108,8 +123,7 @@ func (spc *SciPaperController) getName(r *http.Request) (username, name string) 
 	return f[0], strings.Join(f[1:], " ")
 }
 
-func (spc *SciPaperController) Hello() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		helpers.JSONResponse(w, http.StatusOK, "Hello from SciPaperService")
-	}
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }

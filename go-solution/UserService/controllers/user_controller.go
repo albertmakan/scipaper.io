@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/helpers"
 	"github.com/albertmakan/scipaper.io/go-solution/UserService/models"
@@ -19,6 +18,8 @@ func NewUserController(userService *services.UserService) *UserController {
 
 func (uc *UserController) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -34,26 +35,10 @@ func (uc *UserController) Register() http.HandlerFunc {
 	}
 }
 
-func (uc *UserController) GetAll() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		helpers.JSONResponse(w, http.StatusOK, uc.userService.GetAll())
-	}
-}
-
-func (uc *UserController) FindByUsername() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		username := strings.TrimPrefix(r.URL.Path, "/users/")
-		user := uc.userService.FindByUsername(username)
-		if user == nil {
-			http.Error(w, "user not found", http.StatusNotFound)
-			return
-		}
-		helpers.JSONResponse(w, http.StatusOK, user)
-	}
-}
-
 func (uc *UserController) Authenticate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -72,6 +57,12 @@ func (uc *UserController) Authenticate() http.HandlerFunc {
 
 func (uc *UserController) Hello() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		helpers.JSONResponse(w, http.StatusOK, "Hello from UserService")
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
