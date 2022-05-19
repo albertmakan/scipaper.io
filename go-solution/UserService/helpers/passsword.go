@@ -1,19 +1,15 @@
 package helpers
 
 import (
-	"crypto/rand"
-	"crypto/sha256"
-	"encoding/base64"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GetRandomToken(length int32) string {
-	rb := make([]byte, length)
-	rand.Read(rb)
-	return base64.URLEncoding.EncodeToString(rb)
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(bytes), err
 }
 
-func GetSaltedAndHashedPassword(password string, salt string) string {
-	saltedPasswordBytes := []byte(password + salt)
-	hashedPasswordBytes := sha256.Sum256(saltedPasswordBytes)
-	return base64.URLEncoding.EncodeToString(hashedPasswordBytes[:])
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

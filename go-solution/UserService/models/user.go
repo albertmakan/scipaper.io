@@ -6,7 +6,6 @@ type User struct {
 	ID        primitive.ObjectID  `bson:"_id,omitempty"`
 	Username  string
 	Password  string
-	Salt      string
 	FirstName string
 	LastName  string
 	Email     string

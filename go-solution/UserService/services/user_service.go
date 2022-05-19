@@ -21,8 +21,7 @@ func (userService *UserService) Register(user* models.User) error {
 	if userService.FindByUsername(user.Username) != nil {
 		return fmt.Errorf("user with username %v already exists", user.Username)
 	}
-	user.Salt = helpers.GetRandomToken(16)
-	user.Password = helpers.GetSaltedAndHashedPassword(user.Password, user.Salt)
+	user.Password, _ = helpers.HashPassword(user.Password)
 	userService.userRepository.Create(user)
 	return nil
 }
@@ -40,7 +39,7 @@ func (userService *UserService) Authenticate(username, password string) (*dto.Au
 	if user == nil {
 		return nil, fmt.Errorf("invalid username or password")
 	}
-	if helpers.GetSaltedAndHashedPassword(password, user.Salt) != user.Password {
+	if helpers.CheckPasswordHash(password, user.Password) {
 		return nil, fmt.Errorf("invalid username or password")
 	}
 	claims := helpers.Claims{
