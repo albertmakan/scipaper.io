@@ -8,10 +8,9 @@ service SciPaper {
 
         @crud
         typedef Paper [
-            @id str id
             @required str title
-            @required str author
-            @required str authorId
+            str author
+            str authorId
             @required list<Section> sections
         ]
         typedef Section [
@@ -24,7 +23,7 @@ service SciPaper {
 
         @rest(method=POST)
         @producer(PublishMsgGroup.PaperPublished -> Broker.PUBLISH_PAPER)
-        void publish()
+        void publish(str paperId, str authorId)
     }
 }
 

@@ -8,7 +8,6 @@ service User {
         @create
         @read
         typedef User [
-            @id str id
             @required str username
             @required str firstName
             @required str lastName
@@ -17,7 +16,7 @@ service User {
         ]
 
         @rest(method=POST, mapping="/auth")
-        str authenticate(Login login)
+        str authenticate(str username, str password)
 
         @rest(method=GET)
         bool isLoggedIn(str token)

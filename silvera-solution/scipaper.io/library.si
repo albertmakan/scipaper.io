@@ -5,17 +5,14 @@ service Library {
 
     api {
 
-        @create
-        @read
         typedef Publication [
-            @id str id
             @required str paperId
             @required str author
             @required str title
         ]
 
         @rest(method=GET)
-        list<Publication> search()
+        list<Publication> search(str query)
 
         internal {
             @consumer(PublishMsgGroup.PaperPublished <- Broker.PUBLISH_PAPER)
