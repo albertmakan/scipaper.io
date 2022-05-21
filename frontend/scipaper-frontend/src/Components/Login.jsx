@@ -4,6 +4,10 @@ import { toast } from "react-toastify";
 import { login } from "../Services/userService";
 import { TextField } from "@mui/material";
 import { useFormik } from "formik";
+import Typography from "@mui/material/Typography";
+import { Box } from "@mui/system";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 const validationSchema = yup.object({
   username: yup.string("Enter your username").required("Username is required"),
@@ -20,9 +24,9 @@ export const Login = () => {
     onSubmit: (values) => {
       login(values)
         .then((response) => {
-          localStorage.setItem("Token", response.Jwt);
+          localStorage.setItem("Token", response);
           toast.success("Successful login");
-          //location.replace("/home");
+          window.location.replace("/home");
         })
         .catch((err) => {
           console.log(err);
@@ -42,45 +46,49 @@ export const Login = () => {
     formik.touched[fieldName] && formik.errors[fieldName];
 
   return (
-    <div className="base-container">
-      <div className="header">Login</div>
-      <div className="content">
-        {/* <div className="image">
-          <img src={loginImg} alt="" />
-        </div> */}
-        <div className="form">
-          <form onSubmit={formik.handleSubmit}>
-            <TextField
-              sx={fieldStyle}
-              type="text"
-              name="username"
-              fullWidth
-              label="Username"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              error={hasError("username")}
-              helperText={errorMessage("username")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="password"
-              name="password"
-              fullWidth
-              label="Password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={hasError("password")}
-              helperText={errorMessage("password")}
-            />
-            <div className="footer">
-              <button className="btn" type="submit" value="Submit">
-                Login
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 10,
+        marginBottom: 0,
+      }}
+    >
+      <Typography variant="h4" align="center">
+        Login
+      </Typography>
+      <Typography component={Link} variant="h6" to="/register">
+        Register
+      </Typography>
+
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          sx={fieldStyle}
+          type="text"
+          name="username"
+          fullWidth
+          label="Username"
+          value={formik.values.username}
+          onChange={formik.handleChange}
+          error={hasError("username")}
+          helperText={errorMessage("username")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="password"
+          name="password"
+          fullWidth
+          label="Password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          error={hasError("password")}
+          helperText={errorMessage("password")}
+        />
+        <Button variant="contained" type="submit">
+          Login
+        </Button>
+      </form>
+    </Box>
   );
 };
 export default Login;

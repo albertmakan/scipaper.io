@@ -17,4 +17,6 @@
 *.env
 scipaper-env
 
-output
+target
+proba.txt
+changed-files

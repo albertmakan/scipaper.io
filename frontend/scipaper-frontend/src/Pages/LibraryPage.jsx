@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import NavBar from "../Components/Navbar";
 import PapersTable from "../Components/PapersTable";
-import { myPapers } from "../Services/paperService";
-import Typography from "@mui/material/Typography";
+import { getAll } from "../Services/libraryService";
 import { Box } from "@mui/system";
 
-export default function HomePage() {
+export default function LibraryPage() {
   const [papers, setPapers] = useState([]);
 
   useEffect(() => {
-    myPapers().then((response) => {
+    getAll().then((response) => {
       setPapers(response);
     });
   }, []);
-
   return (
     <>
       <NavBar />
@@ -25,8 +23,7 @@ export default function HomePage() {
           marginBottom: 0,
         }}
       >
-        <Typography variant="h4">My papers</Typography>
-        <PapersTable papers={papers} isMy={true} />
+        <PapersTable papers={papers} isMy={false} />
       </Box>
     </>
   );

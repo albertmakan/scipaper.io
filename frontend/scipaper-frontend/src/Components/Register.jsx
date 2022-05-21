@@ -4,6 +4,10 @@ import { register } from "../Services/userService";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import { TextField } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import { Box } from "@mui/system";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 const validationSchema = yup.object({
   email: yup
@@ -76,89 +80,92 @@ export const Register = () => {
     formik.touched[fieldName] && formik.errors[fieldName];
 
   return (
-    <div className="base-container">
-      <div className="header">Register</div>
-      <div className="content">
-        {/* <div className="image">
-          <img src={loginImg} alt="" />
-        </div> */}
-        <div className="form">
-          <form onSubmit={formik.handleSubmit}>
-            <TextField
-              sx={fieldStyle}
-              type="text"
-              name="firstName"
-              fullWidth
-              label="First name"
-              value={formik.values.firstName}
-              onChange={formik.handleChange}
-              error={hasError("firstName")}
-              helperText={errorMessage("firstName")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="text"
-              name="lastName"
-              fullWidth
-              label="Last name"
-              value={formik.values.lastName}
-              onChange={formik.handleChange}
-              error={hasError("lastName")}
-              helperText={errorMessage("lastName")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="text"
-              name="username"
-              fullWidth
-              label="Username"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              error={hasError("username")}
-              helperText={errorMessage("username")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="email"
-              name="email"
-              fullWidth
-              label="E-mail"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={hasError("email")}
-              helperText={errorMessage("email")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="password"
-              name="password"
-              fullWidth
-              label="Password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={hasError("password")}
-              helperText={errorMessage("password")}
-            />
-            <TextField
-              sx={fieldStyle}
-              type="password"
-              name="passwordConfirm"
-              fullWidth
-              label="Confirm password"
-              value={formik.values.passwordConfirm}
-              onChange={formik.handleChange}
-              error={hasError("passwordConfirm")}
-              helperText={errorMessage("passwordConfirm")}
-            />
-            <div className="footer">
-              <button className="btn" type="submit" value="Submit">
-                Register
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+    <Box
+      sx={{
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 10,
+        marginBottom: 0,
+      }}
+    >
+      <Typography variant="h4" align="center">
+        Register
+      </Typography>
+      <Typography component={Link} variant="h6" to="/login">
+        Login
+      </Typography>
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          sx={fieldStyle}
+          type="text"
+          name="firstName"
+          fullWidth
+          label="First name"
+          value={formik.values.firstName}
+          onChange={formik.handleChange}
+          error={hasError("firstName")}
+          helperText={errorMessage("firstName")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="text"
+          name="lastName"
+          fullWidth
+          label="Last name"
+          value={formik.values.lastName}
+          onChange={formik.handleChange}
+          error={hasError("lastName")}
+          helperText={errorMessage("lastName")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="text"
+          name="username"
+          fullWidth
+          label="Username"
+          value={formik.values.username}
+          onChange={formik.handleChange}
+          error={hasError("username")}
+          helperText={errorMessage("username")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="email"
+          name="email"
+          fullWidth
+          label="E-mail"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          error={hasError("email")}
+          helperText={errorMessage("email")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="password"
+          name="password"
+          fullWidth
+          label="Password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          error={hasError("password")}
+          helperText={errorMessage("password")}
+        />
+        <TextField
+          sx={fieldStyle}
+          type="password"
+          name="passwordConfirm"
+          fullWidth
+          label="Confirm password"
+          value={formik.values.passwordConfirm}
+          onChange={formik.handleChange}
+          error={hasError("passwordConfirm")}
+          helperText={errorMessage("passwordConfirm")}
+        />
+        <Button variant="contained" type="submit">
+          Register
+        </Button>
+      </form>
+    </Box>
   );
 };
 export default Register;

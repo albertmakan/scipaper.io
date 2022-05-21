@@ -5,13 +5,17 @@ const errorHandler = (errorResponse) => {
     toast.error("The server is unavailable.");
     return;
   }
+  let message = errorResponse.data;
+  if (errorResponse.data.message) {
+    message = errorResponse.data.message;
+  }
   switch (errorResponse.status) {
     case 400:
-      toast.error("Bad request - " + errorResponse.data.Message);
+      toast.error("Bad request - " + message);
       break;
 
     case 401:
-      toast.error("Unauthorized - Please log in to access this resource.");
+      toast.error("Unauthorized - " + message);
       break;
 
     case 403:
@@ -21,7 +25,7 @@ const errorHandler = (errorResponse) => {
       break;
 
     case 404:
-      toast.error("Not found - " + errorResponse.data.Message);
+      toast.error("Not found - " + message);
       break;
 
     case 500:

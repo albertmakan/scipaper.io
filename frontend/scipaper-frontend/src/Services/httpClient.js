@@ -2,7 +2,7 @@ import axios from "axios";
 import errorHandler from "./errorHandler";
 
 const httpClient = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "http://localhost:9095",
   headers: {
     Authorization: `Bearer ${localStorage.getItem("Token")}`,
   },
