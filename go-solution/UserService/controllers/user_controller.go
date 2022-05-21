@@ -51,7 +51,7 @@ func (uc *UserController) Authenticate() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		helpers.JSONResponse(w, http.StatusOK, auth)
+		helpers.JSONResponse(w, http.StatusOK, auth.Jwt)
 	}
 }
 

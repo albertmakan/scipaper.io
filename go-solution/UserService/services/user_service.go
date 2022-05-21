@@ -39,7 +39,7 @@ func (userService *UserService) Authenticate(username, password string) (*dto.Au
 	if user == nil {
 		return nil, fmt.Errorf("invalid username or password")
 	}
-	if helpers.CheckPasswordHash(password, user.Password) {
+	if !helpers.CheckPasswordHash(password, user.Password) {
 		return nil, fmt.Errorf("invalid username or password")
 	}
 	claims := helpers.Claims{

@@ -27,6 +27,7 @@ func NewSciPaperController(sciPaperService *services.SciPaperService) *SciPaperC
 func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
 		if !spc.isLoggedIn(r) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -35,11 +36,12 @@ func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 		helpers.ReadJSONBody(r, &paper)
 		paper.AuthorID, paper.Author = spc.getName(r)
 		var err error
+		var paperId interface{}
 		switch r.Method {
 			case http.MethodPost:
-				err = spc.sciPaperService.Create(&paper)
+				paperId, err = spc.sciPaperService.Create(&paper)
 			case http.MethodPut:
-				err = spc.sciPaperService.Update(&paper)
+				paperId, err = spc.sciPaperService.Update(&paper)
 			case http.MethodOptions:
 				w.WriteHeader(http.StatusOK)
 				return
@@ -51,7 +53,7 @@ func (spc *SciPaperController) CreateOrUpdate() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		helpers.JSONResponse(w, http.StatusOK, nil)
+		helpers.JSONResponse(w, http.StatusOK, models.Paper{ID: paperId.(primitive.ObjectID)})
 	}
 }
 
@@ -65,6 +67,19 @@ func (spc *SciPaperController) GetAllByAuthor() http.HandlerFunc {
 		}
 		un, _ := spc.getName(r)
 		helpers.JSONResponse(w, http.StatusOK, spc.sciPaperService.GetAllByAuthorID(un))
+	}
+}
+
+func (spc *SciPaperController) GetByID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == http.MethodOptions {w.WriteHeader(http.StatusOK); return}
+		if !spc.isLoggedIn(r) {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		id, _ := primitive.ObjectIDFromHex(strings.TrimPrefix(r.URL.Path, "/paper/"))
+		helpers.JSONResponse(w, http.StatusOK, spc.sciPaperService.FindByID(id))
 	}
 }
 
@@ -126,4 +141,5 @@ func (spc *SciPaperController) getName(r *http.Request) (username, name string) 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Headers", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS")
 }

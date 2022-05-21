@@ -24,7 +24,7 @@ func main() {
 	defer client.Disconnect(ctx)
 	database := client.Database("scipaper-io")
 	libraryService := services.NewLibraryService(
-		repository.NewLibraryRepository(database.Collection("library"), ctx),
+		repository.NewLibraryRepository(database.Collection("publication"), ctx),
 	)
 	libraryService.InitializeReceiver()
 	libraryService.StartConsuming()

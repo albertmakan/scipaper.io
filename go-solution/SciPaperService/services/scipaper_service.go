@@ -28,7 +28,7 @@ func (sciPaperService *SciPaperService) DeinitializeSender() {
 	sciPaperService.sender.Deinitialize()
 }
 
-func (sciPaperService *SciPaperService) Create(paper *models.Paper) error {
+func (sciPaperService *SciPaperService) Create(paper *models.Paper) (interface{}, error) {
 	return sciPaperService.sciPaperRepository.Create(paper)
 }
 
@@ -36,11 +36,11 @@ func (sciPaperService *SciPaperService) GetAllByAuthorID(authorID string) *[]mod
 	return sciPaperService.sciPaperRepository.GetAllByAuthorID(authorID)
 }
 
-func (sciPaperService *SciPaperService) Update(paper *models.Paper) error {
+func (sciPaperService *SciPaperService) Update(paper *models.Paper) (interface{}, error) {
 	existing := sciPaperService.FindByID(paper.ID)
-	if existing == nil { return fmt.Errorf("paper not found") }
+	if existing == nil { return nil, fmt.Errorf("paper not found") }
 	if existing.AuthorID != paper.AuthorID {
-		return fmt.Errorf("author cannot update someone elses paper")
+		return nil, fmt.Errorf("author cannot update someone elses paper")
 	}
 	return sciPaperService.sciPaperRepository.Update(paper)
 }

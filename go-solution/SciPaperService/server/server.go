@@ -27,6 +27,7 @@ func (server *Server) addHandlers() {
 	router.HandleFunc("/create-update", server.sciPaperController.CreateOrUpdate())
 	router.HandleFunc("/my-papers", server.sciPaperController.GetAllByAuthor())
 	router.HandleFunc("/publish", server.sciPaperController.Publish())
+	router.HandleFunc("/paper/", server.sciPaperController.GetByID())
 	router.HandleFunc("/hello", server.sciPaperController.Hello())
 }
 
