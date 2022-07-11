@@ -20,3 +20,7 @@ scipaper-env
 target
 proba.txt
 changed-files
+
+obj
+bin
+.vs

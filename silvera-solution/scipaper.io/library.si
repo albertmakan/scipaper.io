@@ -3,6 +3,12 @@ import "setup.si"
 service Library {
     service_registry=ServiceRegistry
 
+    deployment {
+      version="0.0.1"
+      port=9094
+      lang="csharp"
+    }
+
     api {
 
         typedef Publication [

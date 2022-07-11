@@ -4,6 +4,12 @@ import "user.si"
 service SciPaper {
     service_registry=ServiceRegistry
 
+    deployment {
+      version="0.0.1"
+      port=9093
+      lang="csharp"
+    }
+
     api {
 
         @crud
