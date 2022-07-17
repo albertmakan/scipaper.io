@@ -14,6 +14,6 @@ namespace SciPaperService
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-                .UseCloudHosting(9093);
+                .UseCloudHosting(50001);
     }
 }

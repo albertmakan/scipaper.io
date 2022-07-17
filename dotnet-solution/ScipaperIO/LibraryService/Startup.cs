@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,19 +12,14 @@ using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka;
 using System;
 using System.Text;
-using SciPaperService.Middleware;
-using SciPaperService.Repository.Contracts;
-using SciPaperService.Repository.Impl;
-using SciPaperService.Services.Base;
-using SciPaperService.Services.Impl;
-using SciPaperService.Settings;
-using Steeltoe.Common.Http.Discovery;
-using RabbitMQ.Client;
-using SciPaperService.Messaging;
-using SciPaperService.Services.Dependencies;
-using Steeltoe.CircuitBreaker.Hystrix;
+using LibraryService.Middleware;
+using LibraryService.Repository.Contracts;
+using LibraryService.Repository.Impl;
+using LibraryService.Services.Base;
+using LibraryService.Services.Impl;
+using LibraryService.Settings;
 
-namespace SciPaperService
+namespace LibraryService
 {
     public class Startup
     {
@@ -40,52 +35,23 @@ namespace SciPaperService
         {
             services.AddDiscoveryClient(Configuration);
             services.AddServiceDiscovery(a => a.UseEureka());
-            services.AddHttpClient("user", client => client.BaseAddress = new Uri("http://user-service/")).AddServiceDiscovery();
 
             services.AddControllers();
-            services.AddSwaggerGen(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.SwaggerDoc(name: "v1", new OpenApiInfo { Title = "Scipaper Service", Version = "v1" });
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme."
-                });
-
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Id = "Bearer",
-                                Type = ReferenceType.SecurityScheme
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LibraryService", Version = "v1" });
             });
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
 
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
-                serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value
-            );
-
-            services.AddHystrixCommand<GetNameCommand>("UserGroup", Configuration);
+                serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             // DI
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IPaperRepository), typeof(PaperRepository));
+            services.AddScoped(typeof(IPublicationRepository), typeof(PublicationRepository));
 
-            services.AddScoped(typeof(IUserClient), typeof(UserClient));
-            services.AddScoped(typeof(IPaperService), typeof(PaperService));
+            services.AddScoped(typeof(IPublicationService), typeof(PublicationService));
 
             // AUTHENTICATION
             services.AddAuthentication(x =>
@@ -114,13 +80,6 @@ namespace SciPaperService
                 new CamelCaseElementNameConvention(),
                 new IgnoreExtraElementsConvention(true)
             }, t => true);
-
-            services.AddScoped(typeof(IKafkaProducer), typeof(KafkaProducer));
-
-            // RABBIT MQ
-            //services.AddSingleton(serviceProvider =>
-            //    new ConnectionFactory { Uri = new("amqp://guest:guest@rabbit:5672/") }
-            //);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,7 +89,7 @@ namespace SciPaperService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SciPaperService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LibraryService v1"));
             }
 
             // app.UseHttpsRedirection();
@@ -139,11 +98,7 @@ namespace SciPaperService
 
             app.UseRouting();
 
-            app.UseAuthentication();
-
             app.UseAuthorization();
-
-            app.UseHystrixRequestContext();
 
             app.UseEndpoints(endpoints =>
             {

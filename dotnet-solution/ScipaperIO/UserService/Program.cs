@@ -14,6 +14,6 @@ namespace UserService
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-                .UseCloudHosting(9092);
+                .UseCloudHosting(50000);
     }
 }

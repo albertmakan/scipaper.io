@@ -8,9 +8,6 @@ namespace UserService.Repository.Impl
     {
         public UserRepository(IMongoDbSettings settings) : base(settings) { }
 
-        public User FindByUsername(string username)
-        {
-            return FindOne(user => user.Username == username);
-        }
+        public User FindByUsername(string username) => FindOne(user => user.Username == username);
     }
 }

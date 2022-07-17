@@ -6,11 +6,13 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Confluent.Kafka" Version="1.9.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.21.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.16.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.16.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
+    <PackageReference Include="Steeltoe.CircuitBreaker.Hystrix" Version="1.1.0" />
     <PackageReference Include="Steeltoe.Common.Hosting" Version="3.2.0" />
     <PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.2.0" />
     <PackageReference Include="Steeltoe.Discovery.Eureka" Version="3.0.0" />
