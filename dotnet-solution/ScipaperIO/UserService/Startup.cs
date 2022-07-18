@@ -48,11 +48,11 @@ namespace UserService
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             // DI
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
+            services.AddSingleton(typeof(IUserRepository), typeof(UserRepository));
 
-            services.AddScoped(typeof(ITokenProvider), typeof(TokenProvider));
-            services.AddScoped(typeof(IUserService), typeof(Services.Impl.UserService));
+            services.AddSingleton(typeof(ITokenProvider), typeof(TokenProvider));
+            services.AddSingleton(typeof(IUserService), typeof(Services.Impl.UserService));
 
             // AUTHENTICATION
             services.AddAuthentication(x =>
@@ -105,6 +105,8 @@ namespace UserService
             {
                 endpoints.MapControllers();
             });
+
+            app.ApplicationServices.GetService<IUserService>();
         }
     }
 }

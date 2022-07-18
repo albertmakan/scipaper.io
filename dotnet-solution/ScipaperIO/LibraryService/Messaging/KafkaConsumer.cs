@@ -1,17 +1,18 @@
 ﻿using Kafka.Public;
 using Kafka.Public.Loggers;
+using LibraryService.Messaging.Messages;
 using System;
 using System.Text;
 using System.Text.Json;
 
 namespace LibraryService.Messaging
 {
-    public interface IKafkaConsumer
+    public interface IKafkaConsumer<T> where T : IMessage
     {
-        void AddListener<T>(Action<T> listener);
+        void AddListener(Action<T> listener);
     }
 
-    public class KafkaConsumer : IKafkaConsumer
+    public class KafkaConsumer<T> : IKafkaConsumer<T> where T : IMessage
     {
         private readonly string _topic;
         private readonly ClusterClient _clusterClient;
@@ -21,10 +22,9 @@ namespace LibraryService.Messaging
             _topic = topic;
             _clusterClient = new(new() { Seeds = "localhost:9092" }, new ConsoleLogger());
             _clusterClient.ConsumeFromLatest(_topic);
-            AddListener<string>(msg => Console.WriteLine($"Message: {msg}"));
         }
 
-        public void AddListener<T>(Action<T> action)
+        public void AddListener(Action<T> action)
         {
             _clusterClient.MessageReceived += record =>
             {

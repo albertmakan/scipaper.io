@@ -19,7 +19,6 @@ using SciPaperService.Services.Base;
 using SciPaperService.Services.Impl;
 using SciPaperService.Settings;
 using Steeltoe.Common.Http.Discovery;
-using RabbitMQ.Client;
 using SciPaperService.Messaging;
 using SciPaperService.Services.Dependencies;
 using Steeltoe.CircuitBreaker.Hystrix;
@@ -81,11 +80,13 @@ namespace SciPaperService
             services.AddHystrixCommand<GetNameCommand>("UserGroup", Configuration);
 
             // DI
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IPaperRepository), typeof(PaperRepository));
+            services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
+            services.AddSingleton(typeof(IPaperRepository), typeof(PaperRepository));
 
-            services.AddScoped(typeof(IUserClient), typeof(UserClient));
-            services.AddScoped(typeof(IPaperService), typeof(PaperService));
+            services.AddSingleton(typeof(IKafkaProducer), typeof(KafkaProducer));
+
+            services.AddSingleton(typeof(IUserClient), typeof(UserClient));
+            services.AddSingleton(typeof(IPaperService), typeof(PaperService));
 
             // AUTHENTICATION
             services.AddAuthentication(x =>
@@ -114,13 +115,6 @@ namespace SciPaperService
                 new CamelCaseElementNameConvention(),
                 new IgnoreExtraElementsConvention(true)
             }, t => true);
-
-            services.AddScoped(typeof(IKafkaProducer), typeof(KafkaProducer));
-
-            // RABBIT MQ
-            //services.AddSingleton(serviceProvider =>
-            //    new ConnectionFactory { Uri = new("amqp://guest:guest@rabbit:5672/") }
-            //);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -149,6 +143,8 @@ namespace SciPaperService
             {
                 endpoints.MapControllers();
             });
+
+            app.ApplicationServices.GetService<IPaperService>();
         }
     }
 }

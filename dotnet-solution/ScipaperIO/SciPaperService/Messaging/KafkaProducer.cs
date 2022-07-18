@@ -1,25 +1,25 @@
 ﻿using Confluent.Kafka;
+using SciPaperService.Messaging.Messages;
 using System;
-using System.Text.Json;
 
 namespace SciPaperService.Messaging
 {
     public interface IKafkaProducer
     {
-        object Send(string topic, object message);
+        object Send(string topic, IMessage message);
     }
 
     public class KafkaProducer : IKafkaProducer
     {
         private readonly ProducerConfig _config = new() { BootstrapServers = "localhost:9092" };
 
-        public object Send(string topic, object message)
+        public object Send(string topic, IMessage message)
         {
             using (var producer = new ProducerBuilder<Null, string>(_config).Build())
             {
                 try
                 {
-                    return producer.ProduceAsync(topic, new Message<Null, string> { Value = JsonSerializer.Serialize(message) })
+                    return producer.ProduceAsync(topic, new Message<Null, string> { Value = message.ToJson() })
                         .GetAwaiter()
                         .GetResult();
                 }

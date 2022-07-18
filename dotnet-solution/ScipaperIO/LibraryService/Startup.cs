@@ -48,10 +48,10 @@ namespace LibraryService
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
 
             // DI
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IPublicationRepository), typeof(PublicationRepository));
+            services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
+            services.AddSingleton(typeof(IPublicationRepository), typeof(PublicationRepository));
 
-            services.AddScoped(typeof(IPublicationService), typeof(PublicationService));
+            services.AddSingleton(typeof(IPublicationService), typeof(PublicationService));
 
             // AUTHENTICATION
             services.AddAuthentication(x =>
@@ -104,6 +104,8 @@ namespace LibraryService
             {
                 endpoints.MapControllers();
             });
+
+            app.ApplicationServices.GetService<IPublicationService>();
         }
     }
 }

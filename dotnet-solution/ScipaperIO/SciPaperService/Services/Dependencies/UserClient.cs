@@ -39,14 +39,13 @@ namespace SciPaperService.Services.Dependencies
 
         protected override async Task<string> RunAsync()
         {
-            System.Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAA "+_httpClient.BaseAddress);
             string name = await _httpClient.GetStringAsync($"api/User/getname/{Username}");
             return name.Trim(new[] { '"' });
         }
 
         protected override string RunFallback()
         {
-            return "Unknown author ??";
+            return "";
         }
     }
 }
