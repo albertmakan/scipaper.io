@@ -1,4 +1,5 @@
-﻿using LibraryService.Models;
+﻿using LibraryService.Filters;
+using LibraryService.Models;
 using LibraryService.Services.Base;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -6,8 +7,9 @@ using System.Collections.Generic;
 
 namespace LibraryService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
+    [ValidateModel]
     public class PublicationController : ControllerBase
     {
         private readonly IPublicationService _publicationService;

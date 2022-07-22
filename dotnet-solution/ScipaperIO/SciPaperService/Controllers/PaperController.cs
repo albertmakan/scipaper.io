@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace SciPaperService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
     [ValidateModel]
@@ -22,7 +21,7 @@ namespace SciPaperService.Controllers
             _paperService = paperService;
         }
 
-        [HttpPost("")]
+        [HttpPost("paper")]
         [Authorize]
         public Paper CreatePaper(Paper paper)
         {
@@ -37,20 +36,20 @@ namespace SciPaperService.Controllers
             _paperService.Publish(request.PaperId, HttpContext.User.Identity.Name);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("paper/{id}")]
         public Paper ReadPaper(string id)
         {
             return _paperService.ReadPaper(id);
         }
 
-        [HttpPut("")]
+        [HttpPut("paper/{id}")]
         [Authorize]
-        public Paper UpdatePaper(Paper paper)
+        public Paper UpdatePaper(string id, Paper paper)
         {
             return _paperService.UpdatePaper(paper);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("paper/{id}")]
         [Authorize]
         public void DeletePaper(string id)
         {

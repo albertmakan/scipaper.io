@@ -29,8 +29,15 @@ namespace LibraryService.Messaging
             _clusterClient.MessageReceived += record =>
             {
                 string msg = Encoding.UTF8.GetString(record.Value as byte[]);
-                T obj = JsonSerializer.Deserialize<T>(msg);
-                action(obj);
+                try
+                {
+                    T obj = JsonSerializer.Deserialize<T>(msg);
+                    action(obj);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Invalid message received: {msg}");
+                }
             };
         }
     }

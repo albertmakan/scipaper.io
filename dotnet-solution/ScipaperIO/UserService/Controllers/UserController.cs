@@ -6,7 +6,6 @@ using UserService.Services.Base;
 
 namespace UserService.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]
     [ValidateModel]

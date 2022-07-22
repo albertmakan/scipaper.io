@@ -58,21 +58,13 @@ namespace SciPaperService
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Id = "Bearer",
-                                Type = ReferenceType.SecurityScheme
-                            }
-                        },
+                        new() { Reference = new() { Id = "Bearer", Type = ReferenceType.SecurityScheme } },
                         Array.Empty<string>()
-                    }
+                    },
                 });
             });
 
             services.Configure<MongoDbSettings>(Configuration.GetSection("MongoDbSettings"));
-
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value
             );
@@ -88,7 +80,7 @@ namespace SciPaperService
             services.AddSingleton(typeof(IUserClient), typeof(UserClient));
             services.AddSingleton(typeof(IPaperService), typeof(PaperService));
 
-            // AUTHENTICATION
+            // AUTHENTICATION:
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
