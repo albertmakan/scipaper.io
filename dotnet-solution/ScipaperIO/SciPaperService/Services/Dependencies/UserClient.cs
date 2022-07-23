@@ -1,5 +1,6 @@
 ﻿using Steeltoe.CircuitBreaker.Hystrix;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace SciPaperService.Services.Dependencies
@@ -39,8 +40,7 @@ namespace SciPaperService.Services.Dependencies
 
         protected override async Task<string> RunAsync()
         {
-            string name = await _httpClient.GetStringAsync($"api/User/getname/{Username}");
-            return name.Trim(new[] { '"' });
+            return await _httpClient.GetFromJsonAsync<string>($"getname/{Username}");
         }
 
         protected override string RunFallback()
