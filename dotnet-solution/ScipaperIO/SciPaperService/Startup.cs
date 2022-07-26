@@ -21,7 +21,6 @@ using SciPaperService.Settings;
 using Steeltoe.Common.Http.Discovery;
 using SciPaperService.Messaging;
 using SciPaperService.Services.Dependencies;
-using Steeltoe.CircuitBreaker.Hystrix;
 
 namespace SciPaperService
 {
@@ -68,8 +67,6 @@ namespace SciPaperService
             services.AddSingleton<IMongoDbSettings>(serviceProvider =>
                 serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value
             );
-
-            services.AddHystrixCommand<GetNameCommand>("UserGroup", Configuration);
 
             // DI
             services.AddSingleton(typeof(IRepository<>), typeof(Repository<>));
@@ -128,8 +125,6 @@ namespace SciPaperService
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseHystrixRequestContext();
 
             app.UseEndpoints(endpoints =>
             {

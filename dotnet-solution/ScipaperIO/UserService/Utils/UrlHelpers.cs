@@ -10,13 +10,15 @@ namespace UserService.Utils
         private static bool IsSimple(Type t)
             => t.IsPrimitive || t == typeof(string) || t == typeof(DateTime);
         private static string UriData(string key, object value)
-            => $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value.ToString())}";
+        {
+            if (value is DateTime date) return $"{Uri.EscapeDataString(key)}={date:yyyy-MM-dd}";
+            return $"{Uri.EscapeDataString(key)}={Uri.EscapeDataString(value.ToString())}";
+        }
 
         public static string ToQueryString(this object request, string name, int lvl = 0)
         {
             if (request == null || name == null) return string.Empty;
-
-            if (request is DateTime date) return UriData(name, date.ToString("yyyy-MM-dd"));
+            
             if (IsSimple(request.GetType())) return UriData(name, request);
 
             var items = new List<string>();

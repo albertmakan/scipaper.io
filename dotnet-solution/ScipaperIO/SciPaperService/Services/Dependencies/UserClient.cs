@@ -13,27 +13,31 @@ namespace SciPaperService.Services.Dependencies
 
     public class UserClient : IUserClient
     {
-        private readonly GetNameCommand _getNameCommand;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public UserClient(GetNameCommand getNameCommand)
+        public UserClient(IHttpClientFactory httpClientFactory)
         {
-            _getNameCommand = getNameCommand;
+            _httpClientFactory = httpClientFactory;
         }
 
         public string GetName(string username)
         {
-            _getNameCommand.Username = username;
-            return _getNameCommand.Execute();
+            return new GetNameCommand(_httpClientFactory)
+            {
+                Username = username
+            }
+            .Execute();
         }
 
     }
 
     public class GetNameCommand : HystrixCommand<string>
     {
-        public string Username { get; set; }
         private readonly HttpClient _httpClient;
+        public string Username { get; set; }
 
-        public GetNameCommand(IHystrixCommandOptions options, IHttpClientFactory httpClientFactory) : base(options)
+        public GetNameCommand(IHttpClientFactory httpClientFactory)
+            : base(HystrixCommandGroupKeyDefault.AsKey("UserGroup"))
         {
             _httpClient = httpClientFactory.CreateClient("user");
         }
